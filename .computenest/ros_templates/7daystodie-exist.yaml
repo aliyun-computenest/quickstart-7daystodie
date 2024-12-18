@@ -1,0 +1,227 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Description:
+  en: Deploy 7DaysToDie game server
+  zh-cn: 部署七日杀游戏服务
+Parameters:
+  Checkbox:
+    Type: String
+    Label:
+      en: Backup Instructions
+      zh-cn: 备份说明
+    AssociationProperty: AlertCheckbox
+    AssociationPropertyMetadata:
+      Description: 使用本服务会重置ECS系统盘，使用前请确保无重要数据或已完成数据备份，以免丢失数据。
+      ConfirmText: 我已备份完成(或无需备份)
+      Alert: true
+      Type: warning
+      MustChecked: true
+  InstanceId:
+    Type: String
+    Label:
+      en: Select Running ECS Instance
+      zh-cn: 选择运行中的ECS实例
+    AssociationProperty: ALIYUN::ECS::Instance::InstanceId
+    AssociationPropertyMetadata:
+      OnlyShowSelector: true
+      RegionId: ${RegionId}
+      Status: Running
+  CreateImage:
+    Type: String
+    Label:
+      en: Whether Create Backup
+      zh-cn: 是否创建备份
+    Description:
+      zh-cn: 使用本服务将会重置ECS实例的系统盘，使用前请确保无重要数据或已经完成数据备份，避免数据丢失。选择“创建”将会自动为您备份镜像，会产生0.12元/GB/月的相关费用
+      en: Using this service will reset the system disk of the ECS instance. Before using it, please ensure that there is no important data or that you have already completed a data backup to avoid data loss. Choosing "Create" will automatically back up the image for you, which will incur a related cost.
+    Default: 'NoCreate'
+    AllowedValues:
+      - 'Create'
+      - 'NoCreate'
+    AssociationPropertyMetadata:
+      ValueLabelMapping:
+        'NoCreate': 不创建
+        'Create': 创建
+  InstancePassword:
+    Type: String
+    Label:
+      en: ECS Instance Password
+      zh-cn: 实例密码
+    Description:
+      en: Server login password, Length 8-30, must contain three(Capital letters,
+        lowercase letters, numbers, ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ Special symbol
+        in)
+      zh-cn: 服务器登录密码,长度8-30，必须包含三项（大写字母、小写字母、数字、 ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ 中的特殊符号）
+    AssociationProperty: ALIYUN::ECS::Instance::Password
+    AssociationPropertyMetadata:
+      OSType: ${OSType}
+    NoEcho: true
+Conditions:
+  IsCreateImage:
+    Fn::Equals:
+      - Ref: CreateImage
+      - Create
+Mappings:
+  ImageId:
+    Windows:
+      cn-beijing: m-2ze7z0tym4dkyl2x4w4w
+      cn-wulanchabu: m-0jl5tmj060mlhafd9tjf
+      cn-qingdao: m-m5ec2vtora7774y70610
+      cn-shanghai: m-uf6cfxrcg0g5do59xdqr
+      cn-hongkong: m-j6cabsdzxpa04jflbjl8
+      cn-heyuan: m-f8zf3qelvo2h4m8zu7gb
+      eu-central-1: m-gw8cc1p8q431xgzkmqah
+      cn-zhangjiakou: m-8vb0rr40618sw14i3erv
+      us-west-1: m-rj942c7ohuf6yh0m1lxq
+      cn-shenzhen: m-wz9477rs65wdia609ib3
+      eu-west-1: m-d7ofcu8qgfnjx75ck09b
+      ap-northeast-2: m-mj7ifh9gg2s35zxj589t
+      ap-northeast-1: m-6wehoe0525hbvb2ukg79
+      me-east-1: m-eb3ebdegwv454zevvcs7
+      cn-chengdu: m-2vc6k5uk6aty7ya76rc8
+      cn-guangzhou: m-7xv2rw07azdogpis5u4a
+      ap-southeast-1: m-t4naixp92olfiqgm1gn4
+      ap-southeast-2: m-p0wb1xgpq5w5s4x4a4uh
+      ap-southeast-3: m-8ps5l0unm8hebtgnh29k
+      cn-huhehaote: m-hp38dlakfgkoq13dihit
+      ap-southeast-5: m-k1adh3bzklkcgd5dkjbi
+      us-east-1: m-0xi42c7ohuf6yh0m1lxr
+      ap-southeast-6: m-5tsa7ovkx7f7zdncyhlj
+      ap-southeast-7: m-0joadnusl5iinv08ti2m
+      cn-hangzhou: m-bp1hgye5gss78qkrtz3y
+Resources:
+  InstanceDataSource:
+    Type: DATASOURCE::ECS::Instances
+    Properties:
+      InstanceIds:
+        - Ref: InstanceId
+  EcsSecurityGroupIngress22:
+    Type: ALIYUN::ECS::SecurityGroupIngress
+    Properties:
+      SecurityGroupId:
+        Fn::Select:
+          - 0
+          - Fn::Jq:
+              - First
+              - .[].SecurityGroupIds
+              - 'Fn::GetAtt':
+                  - InstanceDataSource
+                  - Instances
+      Priority: 1
+      SourceCidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      PortRange: '22/22'
+  EcsSecurityGroupIngress26900:
+    Type: ALIYUN::ECS::SecurityGroupIngress
+    Properties:
+      SecurityGroupId:
+        Fn::Select:
+          - 0
+          - Fn::Jq:
+              - First
+              - .[].SecurityGroupIds
+              - 'Fn::GetAtt':
+                  - InstanceDataSource
+                  - Instances
+      Priority: 1
+      SourceCidrIp: 0.0.0.0/0
+      IpProtocol: udp
+      PortRange: '26900/26900'
+  CustomImage:
+    Type: ALIYUN::ECS::CustomImage
+    Condition: IsCreateImage
+    Properties:
+      InstanceId:
+        Ref: InstanceId
+  Template:
+    Type: ALIYUN::OOS::Template
+    DependsOn:
+      - CustomImage
+    Properties:
+      TemplateName:
+        Fn::Join:
+          - '-'
+          - - template
+            - Ref: ALIYUN::StackName
+      Content: '{"FormatVersion":"OOS-2019-06-01","Description":{"en":"Upgrade Server Version","zh-cn":"升级服务端版本","name-en":"Upgrade Server Version","name-zh-cn":"升级服务端版本"},"Parameters":{"regionId":{"Type":"String","Label":{"en":"RegionId","zh-cn":"地域ID"},"AssociationProperty":"RegionId","Default":"{{ ACS::RegionId }}"},"instanceId":{"Type":"String"},"imageId":{"Type":"String"},"password":{"Type":"String"}},"Tasks":[{"Name":"getInstance","Description":{"en":"Views the ECS instances","zh-cn":"获取ECS实例"},"Action":"ACS::SelectTargets","Properties":{"ResourceType":"ALIYUN::ECS::Instance","RegionId":"{{ regionId }}","Filters":[{"Type":"ResourceIds","ResourceIds":["{{ instanceId }}"],"RegionId":"{{ regionId }}"}]},"Outputs":{"instanceId":{"Type":"String","ValueSelector":"Instances.Instance[].InstanceId"},"OSType":{"Type":"String","ValueSelector":"Instances.Instance[].OSType"}}},{"Name":"replaceSystemDisk","Action":"ACS::ECS::ReplaceSystemDisk","Description":{"en":"Replaces the system disk of ECS instances","zh-cn":"更换系统盘"},"Properties":{"regionId":"{{ regionId }}","instanceId":"{{ getInstance.instanceId }}","imageId":"{{ imageId }}","password":"{{ password }}"}},{"Name":"sleep","Action":"ACS::Sleep","Properties":{"Duration":"PT1M"}}],"Metadata":{"ALIYUN::OOS::Interface":{"ParameterGroups":[{"Parameters":["regionId","instanceId","imageId","password"],"Label":{"default":{"zh-cn":"选择实例","en":"Select Instances"}}}]}}}'
+  ReplaceSystemDisk:
+    Type: ALIYUN::OOS::Execution
+    DependsOn:
+      - Template
+    Properties:
+      SafetyCheck: Skip
+      TemplateName:
+        Fn::Join:
+          - '-'
+          - - template
+            - Ref: ALIYUN::StackName
+      Parameters:
+        regionId:
+          Ref: ALIYUN::Region
+        instanceId:
+          Ref: InstanceId
+        imageId:
+          Fn::FindInMap:
+            - ImageId
+            - Windows
+            - Ref: ALIYUN::Region
+        password:
+          Ref: InstancePassword
+  SleepBeforeRunCommand:
+    Type: ALIYUN::ROS::Sleep
+    DependsOn:
+      - ReplaceSystemDisk
+    Properties:
+      CreateDuration: 60
+  InstanceRunCommandForWindows:
+    Type: ALIYUN::ECS::RunCommand
+    DependsOn:
+      - SleepBeforeRunCommand
+    Properties:
+      Type: RunPowerShellScript
+      Sync: true
+      InstanceIds:
+        - Ref: InstanceId
+      Timeout: 1800
+      CommandContent: |
+        # 更新游戏
+        Start-Process "C:\Program Files\7DaysToDieServer\steam\steamcmd.exe" -ArgumentList "+login anonymous +app_update 294420 validate +quit" -Wait
+
+        # 启动游戏
+        $TaskName = "7DaysToDieServerAutoStart"
+        Stop-ScheduledTask -TaskName "7DaysToDieServerAutoStart"
+        Start-Sleep -Seconds 120
+
+Outputs:
+  七日杀Endpoint:
+    Label:
+      zh-cn: 七日杀服务地址
+      en: 7DaysToDie Service Addresses
+    Value:
+      Fn::Sub:
+        - ${ServerAddress}:26900
+        - ServerAddress:
+            Fn::Select:
+              - 0
+              - Fn::Jq:
+                  - First
+                  - .[].PublicIpAddress
+                  - 'Fn::GetAtt':
+                      - InstanceDataSource
+                      - Instances
+  document:
+    Label:
+      zh-cn: 操作说明
+      en: operation detail
+    Value: 登录您的Steam账号后开始游戏，输入该服务器地址加入游戏即可畅玩啦～
+Metadata:
+  ALIYUN::ROS::Interface:
+    ParameterGroups:
+      - Parameters:
+          - Checkbox
+          - InstanceId
+          - CreateImage
+          - InstancePassword
+        Label:
+          default:
+            zh-cn: 配置游戏服务器
+            en: Configure Game Server
