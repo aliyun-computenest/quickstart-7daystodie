@@ -72,8 +72,8 @@ Service:
 Artifact:
   EcsImage:
     ArtifactType: EcsImage
-    ArtifactName: minecraft
-    Description: Minecraft deploy
+    ArtifactName: 7DaysToDie
+    Description: 7DaysToDie deploy
     ArtifactProperty:
       RegionId: ${ImageBuilder.EcsImage.RegionId}
       ImageId: ${ImageBuilder.EcsImage.SourceImageId}
