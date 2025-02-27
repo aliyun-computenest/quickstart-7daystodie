@@ -12,58 +12,8 @@ Service:
     TemplateConfigs:
       - Name: 快速部署
         Url: 'ros_templates/7daystodie.yaml'
-        AllowedRegions:
-          - cn-beijing
-          - cn-zhangjiakou
-          - cn-huhehaote
-          - cn-wulanchabu
-          - cn-hangzhou
-          - cn-shanghai
-          - cn-shenzhen
-          - cn-heyuan
-          - cn-guangzhou
-          - cn-chengdu
-          - cn-hongkong
-          - ap-northeast-1
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-3
-          - ap-southeast-6
-          - ap-southeast-5
-          - ap-southeast-7
-          - us-east-1
-          - us-west-1
-          - eu-west-1
-          - me-east-1
-          - eu-central-1
-          - cn-qingdao
       - Name: 迁移到计算巢
         Url: 'ros_templates/7daystodie-exist.yaml'
-        AllowedRegions:
-          - cn-beijing
-          - cn-zhangjiakou
-          - cn-huhehaote
-          - cn-wulanchabu
-          - cn-hangzhou
-          - cn-shanghai
-          - cn-shenzhen
-          - cn-heyuan
-          - cn-guangzhou
-          - cn-chengdu
-          - cn-hongkong
-          - ap-northeast-1
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-3
-          - ap-southeast-6
-          - ap-southeast-5
-          - ap-southeast-7
-          - us-east-1
-          - us-west-1
-          - eu-west-1
-          - me-east-1
-          - eu-central-1
-          - cn-qingdao
   ServiceType: private
   ServiceInfo:
     Locale: zh-CN
@@ -77,31 +27,6 @@ Artifact:
     ArtifactProperty:
       RegionId: ${ImageBuilder.EcsImage.RegionId}
       ImageId: ${ImageBuilder.EcsImage.SourceImageId}
-    SupportRegionIds:
-      - cn-beijing
-      - cn-zhangjiakou
-      - cn-huhehaote
-      - cn-wulanchabu
-      - cn-hangzhou
-      - cn-shanghai
-      - cn-shenzhen
-      - cn-heyuan
-      - cn-guangzhou
-      - cn-chengdu
-      - cn-hongkong
-      - ap-northeast-1
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-3
-      - ap-southeast-6
-      - ap-southeast-5
-      - ap-southeast-7
-      - us-east-1
-      - us-west-1
-      - eu-west-1
-      - me-east-1
-      - eu-central-1
-      - cn-qingdao
 ImageBuilder:
   EcsImage:
     RegionId: cn-hangzhou
@@ -109,7 +34,7 @@ ImageBuilder:
     SystemDiskSize: 100
     InstanceType: ecs.c6.large
     InternetMaxBandwidthOut: 10
-    CommandType: RunShellScript
+    CommandType: RunPowerShellScript
     Timeout: 10800
     CommandContent: |-
         # 更新游戏
