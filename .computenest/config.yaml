@@ -29,8 +29,8 @@ Artifact:
       ImageId: ${ImageBuilder.EcsImage.SourceImageId}
 ImageBuilder:
   EcsImage:
-    RegionId: cn-hangzhou
-    SourceImageId: m-bp18v4uy9djurq8fgo8r
+    RegionId: cn-shenzhen
+    SourceImageId: m-wz99d1d64b6ae14p2vo0
     SystemDiskSize: 100
     InstanceType: ecs.c6.large
     InternetMaxBandwidthOut: 10
