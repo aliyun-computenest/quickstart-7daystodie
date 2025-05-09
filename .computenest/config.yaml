@@ -16,9 +16,12 @@ Service:
         Url: 'ros_templates/7daystodie-exist.yaml'
   ServiceType: private
   ServiceInfo:
-    Locale: zh-CN
-    ShortDescription: docker deploy
-    Image: 'resources/icons/service_logo.jpg'
+    - Agreements: []
+      Image: resources/icons/service_logo_zh-CN.png
+      Locale: zh-CN
+      Name: 七日杀-快速部署
+      ShortDescription: 《七日杀》是由The Fun Pimps研发The Fun Pimps Entertainment LLC发行的集合第一人称射击、恐怖生存、塔防与角色扮演等多种玩法的开放世界丧尸游戏
+      Softwares: []
 Artifact:
   EcsImage:
     ArtifactType: EcsImage
