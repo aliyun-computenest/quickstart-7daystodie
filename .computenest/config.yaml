@@ -17,7 +17,7 @@ Service:
   ServiceType: private
   ServiceInfo:
     - Agreements: []
-      Image: resources/icons/service_logo_zh-CN.png
+      Image: resources/icons/service_logo.png
       Locale: zh-CN
       Name: 七日杀-快速部署
       ShortDescription: 《七日杀》是由The Fun Pimps研发The Fun Pimps Entertainment LLC发行的集合第一人称射击、恐怖生存、塔防与角色扮演等多种玩法的开放世界丧尸游戏
