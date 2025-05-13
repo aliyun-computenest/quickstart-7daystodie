@@ -3,7 +3,7 @@ Service:
   DeployType: ros
   DeployMetadata:
     ServiceInstanceNameRule:
-      Prefix: 7daystodie-
+      Prefix: sevendaystodie-
     SupplierDeployMetadata:
       ArtifactRelation:
         'm-bp1bx1br89nv53czvt7p':
